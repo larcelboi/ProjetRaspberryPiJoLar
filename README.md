@@ -1,4 +1,5 @@
 Diagramme de classe:
+```mermaid
 classDiagram
 
     class Capteur {
@@ -45,3 +46,4 @@ classDiagram
 
     note for Capteur "SCD-41 : CO2, température, humidité"
     note for Actionneur "Ventilateur : température\nFeu : CO2"
+```
