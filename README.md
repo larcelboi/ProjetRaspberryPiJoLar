@@ -19,7 +19,7 @@ classDiagram
         +float valeur
         +String unite
         +datetime horodatage
-        +TypeCapteur type
+        +TypeMesure type
     }
 
     class Actionneur {
@@ -54,7 +54,7 @@ classDiagram
         +recevoir_commandes()
     }
 
-    class TypeCapteur {
+    class TypeMesure {
         <<enumeration>>
         CO2
         TEMPERATURE
@@ -73,7 +73,7 @@ classDiagram
     Actionneur <|-- FeuTricolore
 
     CapteurSCD41 --> "1..*" Mesure : produit
-    Mesure --> TypeCapteur : identifie le type
+    Mesure --> TypeMesure : identifie le type
     Actionneur --> TypeActionneur : possède un type
 
     ControleurQualiteAir --> Capteur : consulte
