@@ -3,24 +3,55 @@ Diagramme de classe:
 classDiagram
 
     class Capteur {
+        <<abstract>>
         +int id
-        +TypeCapteur type
+        +lire_mesures() List~Mesure~
+    }
+
+    class CapteurSCD41 {
+        +lire_mesures() List~Mesure~
+        +lire_co2() float
+        +lire_temperature() float
+        +lire_humidite() float
+    }
+
+    class Mesure {
         +float valeur
+        +String unite
+        +datetime horodatage
+        +TypeCapteur type
     }
 
     class Actionneur {
+        <<abstract>>
         +int id
         +TypeActionneur type
         +bool actif
+        +activer()
+        +desactiver()
     }
 
-    class Application {
+    class Ventilateur {
+        +activer()
+        +desactiver()
+    }
+
+    class FeuTricolore {
+        +afficher_vert()
+        +afficher_jaune()
+        +afficher_rouge()
+    }
+
+    class ControleurQualiteAir {
         +float seuilTemperature
         +float seuilCO2
-        +activerVentilateur()
-        +desactiverVentilateur()
-        +modifierSeuilTemperature()
-        +modifierSeuilCO2()
+        +evaluer_mesures()
+        +mettre_a_jour_actionneurs()
+    }
+
+    class ClientMQTT {
+        +publier_mesures()
+        +recevoir_commandes()
     }
 
     class TypeCapteur {
@@ -28,6 +59,7 @@ classDiagram
         CO2
         TEMPERATURE
         HUMIDITE
+        BRUIT
     }
 
     class TypeActionneur {
@@ -36,14 +68,23 @@ classDiagram
         FEU_TRICOLORE
     }
 
-    Capteur --> TypeCapteur : possède un type
+    Capteur <|-- CapteurSCD41
+    Actionneur <|-- Ventilateur
+    Actionneur <|-- FeuTricolore
+
+    CapteurSCD41 --> "1..*" Mesure : produit
+    Mesure --> TypeCapteur : identifie le type
     Actionneur --> TypeActionneur : possède un type
 
-    Capteur "1" --> "0..*" Actionneur : fournit les données pour
+    ControleurQualiteAir --> Capteur : consulte
+    ControleurQualiteAir --> Mesure : évalue
+    ControleurQualiteAir --> Actionneur : commande
 
-    Application --> Capteur : consulte
-    Application --> Actionneur : contrôle
+    ClientMQTT --> Capteur : publie les mesures
+    ClientMQTT --> ControleurQualiteAir : transmet les commandes
 
-    note for Capteur "SCD-41 : CO2, température, humidité"
-    note for Actionneur "Ventilateur : température\nFeu : CO2"
+    note for CapteurSCD41 "Mesure le CO2, la température et l'humidité"
+    note for Ventilateur "S'active selon les seuils configurés"
+    note for FeuTricolore "Affiche l'état de la qualité de l'air"
+    note for Mesure "Chaque mesure possède une valeur, une unité et un horodatage"
 ```
